@@ -1,0 +1,38 @@
+gitlab搭建与基本使用
+在CentOS系统上安装所需的依赖：ssh，防火墙,postfix(用于邮件通知) ，wget，以下这些命令也会打开系统防火墙中的HTTP和SSH端口访问。
+
+1.安装ssh
+sudo yum install -y curl policycoreutils-pythonopenssh-server
+2.将SSH服务设置成开机自启动
+sudo systemctl enable sshd
+3.启动SSH服务
+sudo systemctl start sshd
+4.安装防火墙（如果已经安装了防火墙并且已经在运行状态，则可直接进行第6步）
+yum install firewalld systemd -y
+5.开启防火墙
+service firewalld  start
+6.添加http服务到firewalld,pemmanent表示永久生效，若不加--permanent系统下次启动后就会失效。
+sudo firewall-cmd --permanent --add-service=http
+7.重启防火墙
+sudo systemctl reload firewalld
+8.安装Postfix以发送通知邮件
+sudo yum install postfix
+9.将postfix服务设置成开机自启动
+sudo systemctl enable postfix
+10.启动postfix
+sudo systemctl start postfix
+11.wget 用于从外网上下载插件（检查系统中是否已经安装wget，使用命令wget -V查看是否安装wget）
+安装wget
+yum -y install wget
+12.安装vim编辑器
+yum install vim -y
+13.添加gitlab镜像
+wget https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/yum/el7/gitlab-ce-10.0.0-ce.0.el7.x86_64.rpm
+14.安装gitlab
+rpm -i gitlab-ce-10.0.0-ce.0.el7.x86_64.rpm
+15.修改gitlab配置文件指定服务器ip和自定义端口：
+vim  /etc/gitlab/gitlab.rb
+修改external_url ‘http://服务器ip：端口’
+16.重置并启动GitLab
+gitlab-ctl reconfigure
+gitlab-ctl restart
